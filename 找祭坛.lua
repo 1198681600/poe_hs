@@ -14,9 +14,9 @@ imageFinder.targetSequence = {
     "怪物加属性伤害",
     "怪物加速",
     "怪物必中",
+    "寒冰爆炸",
     "喷火骷髅",
     "增益消失加快",
-    "寒冰爆炸",
     "承伤",
     "无敌图腾",
     "毒云",
@@ -27,9 +27,6 @@ imageFinder.targetSequence = {
     "催灭",
     "催灭2",
 }
-
--- 标志位，表示当前是否在执行查找
-imageFinder.isSearching = false
 
 -- 清除当前显示的所有边框
 function imageFinder:clearHighlights()
@@ -93,10 +90,10 @@ function imageFinder:click(x, y)
 end
 
 -- API请求函数 - 修改为支持回调
-function imageFinder:findImage(targetName, callback)
+function imageFinder:findImage()
     -- 准备要发送的JSON数据
     local requestData = {
-        target_enum = targetName,
+        targets = imageFinder.targetSequence,
         max_results = 1,
         use_gray = false
     }
@@ -111,7 +108,7 @@ function imageFinder:findImage(targetName, callback)
 
     -- 执行HTTP POST请求
     hs.http.asyncPost(
-            "http://127.0.0.1:8077/find_image",
+            "http://127.0.0.1:8077/find_first_match",
             jsonData,
             headers,
             function(status, body, responseHeaders)
@@ -134,7 +131,7 @@ function imageFinder:findImage(targetName, callback)
                                     match.width,
                                     match.height,
                                     match.confidence,
-                                    targetName
+                                    response.target_name
                             )
 
                             -- 移动鼠标到匹配的中心
@@ -159,11 +156,6 @@ function imageFinder:findImage(targetName, callback)
                     print("请求失败, 状态码:", status)
                     print("响应内容:", body)
                 end
-
-                -- 无论成功与否，调用回调函数
-                if callback then
-                    callback(found)
-                end
             end
     )
 end
@@ -175,46 +167,10 @@ end
 
 -- 开始按照顺序查找图片
 function imageFinder:startSequentialSearch()
-    -- 如果正在查找中，直接退出
-    if self.isSearching then
-        hs.alert.show("上一次查找还在进行中", 2)
-        return
-    end
-
-    self.isSearching = true
-
     -- 清除可能存在的高亮显示
     self:clearHighlights()
 
-    -- 递归函数，处理查找序列
-    local function searchNextImage(index)
-        -- 如果已经查找完所有图片，结束查找
-        if index > #self.targetSequence then
-            hs.alert.show("查找完成，未找到任何匹配图片", 2)
-            self.isSearching = false
-            return
-        end
-
-        local targetName = self.targetSequence[index]
-        print("正在查找图片: " .. targetName)
-
-        -- 尝试查找当前图片，并在回调中处理结果
-        self:findImage(targetName, function(found)
-            if found then
-                -- 如果找到了图片，结束查找
-                print("找到图片 " .. targetName .. "，停止查找")
-                self.isSearching = false
-            else
-                -- 如果没找到，查找下一张
-                hs.timer.doAfter(0.2, function()  -- 添加小延迟避免请求过于频繁
-                    searchNextImage(index + 1)
-                end)
-            end
-        end)
-    end
-
-    -- 开始从第一张图片查找
-    searchNextImage(1)
+    self:findImage()
 end
 
 -- 注册快捷键：⌘+⇧+F (Command+Shift+F)
