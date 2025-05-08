@@ -1,4 +1,4 @@
-local clickAltar = require("点祭坛选项")
+local clickAltar = require("switch_and_click_altar")
 
 
 -- 图像查找器模块
@@ -48,7 +48,7 @@ function imageFinder:findImage()
                             print("存在祭坛选项 开始请求选哪一个")
                             found = true
                             clickAltar.startSequentialSearch()
-                            hs.timer.doAfter(5, function()
+                            hs.timer.doAfter(4, function()
                                 found = false
                             end)
                         end
