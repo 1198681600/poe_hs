@@ -1,1 +1,1 @@
-dofile(hs.configdir .. "/找物品.lua")
+dofile(hs.configdir .. "/找祭坛.lua")
