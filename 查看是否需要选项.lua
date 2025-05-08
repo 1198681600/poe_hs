@@ -1,6 +1,5 @@
 local clickAltar = require("switch_and_click_altar")
 
-
 -- 图像查找器模块
 local imageFinder = {}
 
@@ -64,10 +63,6 @@ function imageFinder:findImage()
                 end
             end
     )
-end
-
-function blockingSleep(seconds)
-    hs.timer.usleep(seconds * 1000000)
 end
 
 -- 定义一个全局变量来跟踪查找状态

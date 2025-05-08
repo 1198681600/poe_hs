@@ -28,18 +28,6 @@ imageFinder.targetSequence = {
     "催灭2",
 }
 
--- 移动鼠标到指定位置
-function imageFinder:moveMouse(x, y)
-    hs.mouse.absolutePosition({x=x, y=y})
-end
-
-function imageFinder:click(x, y)
-    hs.mouse.absolutePosition({x=x, y=y})
-    blockingSleep(0.1)
-    hs.eventtap.leftClick({x=x, y=y},50000)
-    blockingSleep(0.1)
-end
-
 -- API请求函数 - 修改为支持回调
 function imageFinder:findImage()
     -- 准备要发送的JSON数据
@@ -76,11 +64,11 @@ function imageFinder:findImage()
                             local match = response.matches[1]
 
                             -- 移动鼠标到匹配的中心
-                            self:click(match.center_x, match.center_y)
+                            moveAndClick(match.center_x, match.center_y)
 
-                            self:click(1148, 783)
+                            moveAndClick(1148, 783)
                             print("已经选择好了选项",response.target_name)
-                            self:moveMouse(886,751)
+                            moveMouse(886,751)
                             -- 设置为已找到
                             found = true
                         end
@@ -96,10 +84,6 @@ function imageFinder:findImage()
                 end
             end
     )
-end
-
-function blockingSleep(seconds)
-    hs.timer.usleep(seconds * 1000000)
 end
 
 
