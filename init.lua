@@ -1,1 +1,1 @@
-dofile(hs.configdir .. "/找祭坛.lua")
+dofile(hs.configdir .. "/查看是否需要选项.lua")
